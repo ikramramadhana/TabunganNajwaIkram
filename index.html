@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabungan Berdua</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #fce4ec;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #ec407a;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .date-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #f8bbd0;
+            border-left: 5px solid #d81b60;
+            border-radius: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .date-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            font-size: 16px;
+            font-weight: bold;
+            color: #880e4f;
+        }
+        input[type="checkbox"] {
+            transform: scale(1.2);
+            margin-right: 10px;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .checkbox-group span {
+            font-size: 14px;
+            color: #4a148c;
+        }
+        .totals {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 18px;
+            color: #ad1457;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tabungan Bersama</h1>
+        <div id="savings-list"></div>
+        <div class="totals">
+            <p>Total Tabungan Hari Ini: <span id="daily-total">0</span> IDR</p>
+            <p>Total Akumulasi Tabungan: <span id="accumulated-total">0</span> IDR</p>
+        </div>
+    </div>
+
+    <script>
+        const endDate = new Date('2025-03-25');
+        const today = new Date();
+        const savingsList = document.getElementById('savings-list');
+        const dailyTotalElement = document.getElementById('daily-total');
+        const accumulatedTotalElement = document.getElementById('accumulated-total');
+
+        const savingsPerPerson = 10000; // 10,000 IDR per person per day
+        let accumulatedTotal = 0;
+
+        function generateDates(start, end) {
+            const dates = [];
+            let currentDate = new Date(start);
+            while (currentDate <= end) {
+                dates.push(new Date(currentDate));
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            return dates;
+        }
+
+        function updateTotals() {
+            const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+            let dailyTotal = 0;
+
+            allCheckboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    dailyTotal += savingsPerPerson;
+                }
+
+                // Save checkbox state
+                localStorage.setItem(checkbox.id, checkbox.checked);
+            });
+
+            dailyTotalElement.textContent = dailyTotal.toLocaleString('id-ID');
+            accumulatedTotalElement.textContent = accumulatedTotal.toLocaleString('id-ID');
+        }
+
+        const dates = generateDates(today, endDate);
+
+        dates.forEach((date, index) => {
+            const dateItem = document.createElement('div');
+            dateItem.className = 'date-item';
+
+            const label = document.createElement('label');
+            label.textContent = date.toLocaleDateString('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            });
+
+            const ikramGroup = document.createElement('div');
+            ikramGroup.className = 'checkbox-group';
+            const ikramCheckbox = document.createElement('input');
+            ikramCheckbox.type = 'checkbox';
+            ikramCheckbox.id = `ikram-${index}`; // Unique ID for localStorage
+            ikramCheckbox.checked = localStorage.getItem(ikramCheckbox.id) === 'true';
+            ikramCheckbox.addEventListener('change', updateTotals);
+            const ikramLabel = document.createElement('span');
+            ikramLabel.textContent = 'Ikram';
+            ikramGroup.appendChild(ikramCheckbox);
+            ikramGroup.appendChild(ikramLabel);
+
+            const raisyaGroup = document.createElement('div');
+            raisyaGroup.className = 'checkbox-group';
+            const raisyaCheckbox = document.createElement('input');
+            raisyaCheckbox.type = 'checkbox';
+            raisyaCheckbox.id = `raisya-${index}`; // Unique ID for localStorage
+            raisyaCheckbox.checked = localStorage.getItem(raisyaCheckbox.id) === 'true';
+            raisyaCheckbox.addEventListener('change', updateTotals);
+            const raisyaLabel = document.createElement('span');
+            raisyaLabel.textContent = 'Raisya';
+            raisyaGroup.appendChild(raisyaCheckbox);
+            raisyaGroup.appendChild(raisyaLabel);
+
+            dateItem.appendChild(label);
+            dateItem.appendChild(ikramGroup);
+            dateItem.appendChild(raisyaGroup);
+            savingsList.appendChild(dateItem);
+        });
+
+        // Initialize accumulated total
+        accumulatedTotal = dates.length * 2 * savingsPerPerson;
+        updateTotals();
+    </script>
+</body>
+</html>

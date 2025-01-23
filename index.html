@@ -77,8 +77,8 @@
     </div>
 
     <script>
-        const endDate = new Date('2025-03-25');
-        const today = new Date();
+        const startDate = new Date('2025-01-22'); // Mulai dari 22 Januari 2025
+        const endDate = new Date('2025-03-25');   // Sampai 25 Maret 2025
         const savingsList = document.getElementById('savings-list');
         const dailyTotalElement = document.getElementById('daily-total');
         const accumulatedTotalElement = document.getElementById('accumulated-total');
@@ -113,7 +113,7 @@
             accumulatedTotalElement.textContent = accumulatedTotal.toLocaleString('id-ID');
         }
 
-        const dates = generateDates(today, endDate);
+        const dates = generateDates(startDate, endDate);
 
         dates.forEach((date, index) => {
             const dateItem = document.createElement('div');

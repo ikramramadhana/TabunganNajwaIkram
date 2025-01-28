@@ -64,6 +64,12 @@
             font-size: 18px;
             color: #ad1457;
         }
+        .percentage {
+            font-size: 20px;
+            font-weight: bold;
+            color: #d81b60;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -73,6 +79,7 @@
         <div class="totals">
             <p>Total Tabungan Hari Ini: <span id="daily-total">0</span> IDR</p>
             <p>Total Akumulasi Tabungan: <span id="accumulated-total">0</span> IDR</p>
+            <p class="percentage">Progress: <span id="progress-percentage">0</span>%</p>
         </div>
     </div>
 
@@ -82,9 +89,11 @@
         const savingsList = document.getElementById('savings-list');
         const dailyTotalElement = document.getElementById('daily-total');
         const accumulatedTotalElement = document.getElementById('accumulated-total');
+        const progressPercentageElement = document.getElementById('progress-percentage');
 
         const savingsPerPerson = 10000; // 10,000 IDR per person per day
         let accumulatedTotal = 0;
+        let maxSavings = 0;
 
         function generateDates(start, end) {
             const dates = [];
@@ -111,6 +120,10 @@
 
             dailyTotalElement.textContent = dailyTotal.toLocaleString('id-ID');
             accumulatedTotalElement.textContent = accumulatedTotal.toLocaleString('id-ID');
+
+            // Calculate progress percentage
+            const progress = (dailyTotal / maxSavings) * 100;
+            progressPercentageElement.textContent = progress.toFixed(2);
         }
 
         const dates = generateDates(startDate, endDate);
@@ -157,8 +170,9 @@
             savingsList.appendChild(dateItem);
         });
 
-        // Initialize accumulated total
-        accumulatedTotal = dates.length * 2 * savingsPerPerson;
+        // Initialize maximum savings and accumulated total
+        maxSavings = dates.length * 2 * savingsPerPerson;
+        accumulatedTotal = maxSavings;
         updateTotals();
     </script>
 </body>

@@ -80,6 +80,7 @@
             <p>Total Tabungan Hari Ini: <span id="daily-total">0</span> IDR</p>
             <p>Total Akumulasi Tabungan: <span id="accumulated-total">0</span> IDR</p>
             <p class="percentage">Progress: <span id="progress-percentage">0</span>%</p>
+            <p>Jumlah Hari Menabung: <span id="days-saved">0</span> hari</p>
         </div>
     </div>
 
@@ -90,6 +91,7 @@
         const dailyTotalElement = document.getElementById('daily-total');
         const accumulatedTotalElement = document.getElementById('accumulated-total');
         const progressPercentageElement = document.getElementById('progress-percentage');
+        const daysSavedElement = document.getElementById('days-saved');
 
         const savingsPerPerson = 10000; // 10,000 IDR per person per day
         let accumulatedTotal = 0;
@@ -108,18 +110,28 @@
         function updateTotals() {
             const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
             let dailyTotal = 0;
+            let daysSaved = 0;
+
+            const dateGroups = document.querySelectorAll('.date-item');
+            dateGroups.forEach(group => {
+                const checkboxes = group.querySelectorAll('input[type="checkbox"]');
+                const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+                if (allChecked) {
+                    daysSaved += 1;
+                }
+            });
 
             allCheckboxes.forEach(checkbox => {
                 if (checkbox.checked) {
                     dailyTotal += savingsPerPerson;
                 }
-
                 // Save checkbox state
                 localStorage.setItem(checkbox.id, checkbox.checked);
             });
 
             dailyTotalElement.textContent = dailyTotal.toLocaleString('id-ID');
             accumulatedTotalElement.textContent = accumulatedTotal.toLocaleString('id-ID');
+            daysSavedElement.textContent = daysSaved;
 
             // Calculate progress percentage
             const progress = (dailyTotal / maxSavings) * 100;

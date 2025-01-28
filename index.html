@@ -26,6 +26,7 @@
             margin-bottom: 20px;
         }
         .date-item {
+            position: relative;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
@@ -70,6 +71,27 @@
             color: #d81b60;
             margin-top: 10px;
         }
+        .celebration {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            font-weight: bold;
+            color: #4caf50;
+            animation: fadeOut 2s forwards;
+            pointer-events: none;
+        }
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(1.5);
+            }
+        }
     </style>
 </head>
 <body>
@@ -107,6 +129,17 @@
             return dates;
         }
 
+        function showCelebration(container) {
+            const celebration = document.createElement('div');
+            celebration.className = 'celebration';
+            celebration.textContent = 'Yeay! Hari ini sudah menabung!';
+            container.appendChild(celebration);
+
+            setTimeout(() => {
+                celebration.remove();
+            }, 2000); // Remove after 2 seconds
+        }
+
         function updateTotals() {
             const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
             let dailyTotal = 0;
@@ -118,6 +151,10 @@
                 const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
                 if (allChecked) {
                     daysSaved += 1;
+                    if (!group.classList.contains('celebrated')) {
+                        showCelebration(group);
+                        group.classList.add('celebrated');
+                    }
                 }
             });
 
